@@ -35,6 +35,7 @@ import com.mzt.logapi.context.LogRecordContext;
 import com.mzt.logapi.service.impl.DiffParseFunction;
 import com.mzt.logapi.starter.annotation.LogRecord;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -86,6 +87,8 @@ public class AdminUserServiceImpl implements AdminUserService {
 
     @Resource
     private ConfigApi configApi;
+    @Resource
+    private MessageSource messageSource;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -464,7 +467,8 @@ public class AdminUserServiceImpl implements AdminUserService {
             throw exception(USER_NOT_EXISTS);
         }
         if (!isPasswordMatch(oldPassword, user.getPassword())) {
-            throw exception(USER_PASSWORD_FAILED);
+            throw new ServiceException(USER_PASSWORD_FAILED.getCode(),
+                    messageSource.getMessage("user.password.failed", null, Locale.getDefault()));
         }
     }
 
